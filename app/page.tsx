@@ -1,65 +1,58 @@
-import Image from "next/image";
+import React from "react";
+import { HeroPhotoBand } from "@/components/ui/hero-photo-band";
+import { BenefitCard } from "@/components/ui/benefit-card";
+import { Tag, Wrench, Gift } from "lucide-react";
+import { FadeIn } from "@/components/ui/fade-in";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <main className="min-h-screen bg-canvas overflow-hidden">
+      <HeroPhotoBand />
+      
+      <section className="py-20 px-6 lg:px-8 max-w-7xl mx-auto">
+        <FadeIn direction="up">
+          <div className="text-center mb-16">
+            <h2 className="text-display-lg font-display text-ink mb-4">Manfaat bagi Komunitas</h2>
+            <p className="text-body-md text-muted max-w-2xl mx-auto font-body">
+              Program sponsorship Sailun dirancang khusus untuk mendukung kegiatan komunitas otomotif di Indonesia dengan berbagai keuntungan nyata.
+            </p>
+          </div>
+        </FadeIn>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FadeIn direction="up" delay={100}>
+            <BenefitCard 
+              title="Diskon" 
+              description="Nikmati potongan harga khusus dan promosi eksklusif yang hanya tersedia bagi member aktif klub saat membeli produk ban Sailun di dealer resmi kami."
+              icon={<Tag className="w-8 h-8 text-accent" strokeWidth={1.5} />}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </FadeIn>
+          <FadeIn direction="up" delay={250}>
+            <BenefitCard 
+              title="Pemeriksaan Ban Gratis" 
+              description="Tim ahli teknis kami akan hadir langsung di event atau gathering tahunan Anda untuk memberikan layanan pengecekan kondisi ban menyeluruh secara cuma-cuma."
+              icon={<Wrench className="w-8 h-8 text-accent" strokeWidth={1.5} />}
+            />
+          </FadeIn>
+          <FadeIn direction="up" delay={400}>
+            <BenefitCard 
+              title="Merchandise Eksklusif" 
+              description="Dapatkan apparel khusus, jaket touring premium, dan berbagai atribut Sailun menarik lainnya sebagai bentuk apresiasi bagi klub yang terpilih."
+              icon={<Gift className="w-8 h-8 text-accent" strokeWidth={1.5} />}
+            />
+          </FadeIn>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <footer className="bg-gradient-to-br from-graphite to-graphite-soft py-8 border-t border-white/5">
+        <FadeIn direction="up">
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 text-center">
+            <p className="text-body-sm text-graphite-text-strong/70 font-body">
+              &copy; {new Date().getFullYear()} Copyright Hip Production - Integrated Company Event
+            </p>
+          </div>
+        </FadeIn>
+      </footer>
+    </main>
   );
 }

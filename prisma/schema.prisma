@@ -1,0 +1,268 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model club {
+  id                     String                   @id @default(cuid())
+  namaKomunitas          String
+  slug                   String                   @unique(map: "Club_slug_key")
+  jumlahAnggota          Int
+  tahunMobilMulai        Int
+  tahunMobilAkhir        Int
+  namaKetua              String
+  alamatSekretariat      String?                  @db.Text
+  kota                   String?
+  noWhatsappKetua        String?
+  logoUrl                String?
+  status                 club_status              @default(unverified)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime
+  userId                 String?                  @unique(map: "Club_userId_key")
+  user                   user?                    @relation(fields: [userId], references: [id], map: "Club_userId_fkey")
+  member                 member[]
+  sponsorshipapplication sponsorshipapplication[]
+}
+
+model dealer {
+  id          String        @id @default(cuid())
+  namaDealer  String
+  alamat      String
+  status      String        @default("active")
+  dealerstaff dealerstaff[]
+  transaction transaction[]
+}
+
+model dealerstaff {
+  id       String @id @default(cuid())
+  userId   String @unique(map: "DealerStaff_userId_key")
+  dealerId String
+  dealer   dealer @relation(fields: [dealerId], references: [id], map: "DealerStaff_dealerId_fkey")
+  user     user   @relation(fields: [userId], references: [id], map: "DealerStaff_userId_fkey")
+
+  @@index([dealerId], map: "DealerStaff_dealerId_fkey")
+}
+
+model event {
+  id                       String                 @id @default(cuid())
+  sponsorshipApplicationId String                 @unique(map: "Event_sponsorshipApplicationId_key")
+  slug                     String                 @unique(map: "Event_slug_key")
+  status                   String
+  createdAt                DateTime               @default(now())
+  sponsorshipapplication   sponsorshipapplication @relation(fields: [sponsorshipApplicationId], references: [id], map: "Event_sponsorshipApplicationId_fkey")
+  member                   member[]
+  eventattendance          eventattendance[]
+}
+
+model member {
+  id           String        @id @default(cuid())
+  userId       String        @unique(map: "Member_userId_key")
+  nama         String
+  usia         Int
+  telepon      String        @unique(map: "Member_telepon_key")
+  email        String        @unique(map: "Member_email_key")
+  tipeMobil    String
+  tahunMobil   Int
+  gender       member_gender
+  clubId       String
+  eventAsalId  String?
+  referralCode String        @unique(map: "Member_referralCode_key")
+  qrCardId     String        @unique(map: "Member_qrCardId_key")
+  referredByMemberId String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime
+  club         club          @relation(fields: [clubId], references: [id], map: "Member_clubId_fkey")
+  event        event?        @relation(fields: [eventAsalId], references: [id], map: "Member_eventAsalId_fkey")
+  user         user          @relation(fields: [userId], references: [id], map: "Member_userId_fkey")
+  transaction  transaction[]
+  eventattendance eventattendance[]
+
+  @@index([clubId], map: "Member_clubId_fkey")
+  @@index([eventAsalId], map: "Member_eventAsalId_fkey")
+}
+
+model eventattendance {
+  id        String   @id @default(cuid())
+  eventId   String
+  memberId  String
+  createdAt DateTime @default(now())
+  event     event    @relation(fields: [eventId], references: [id])
+  member    member   @relation(fields: [memberId], references: [id])
+
+  @@unique([eventId, memberId])
+  @@index([eventId])
+  @@index([memberId])
+}
+
+model pointledger {
+  id                 String                 @id @default(cuid())
+  targetType         pointledger_targetType
+  targetId           String
+  transactionId      String?
+  jumlah             Int
+  tipe               pointledger_tipe
+  tanggalKedaluwarsa DateTime?
+  createdAt          DateTime               @default(now())
+  redemptionId       String?
+  redemption         redemption?            @relation(fields: [redemptionId], references: [id], map: "PointLedger_redemptionId_fkey")
+  transaction        transaction?           @relation(fields: [transactionId], references: [id], map: "PointLedger_transactionId_fkey")
+
+  @@index([transactionId], map: "PointLedger_transactionId_fkey")
+  @@index([redemptionId], map: "PointLedger_redemptionId_fkey")
+}
+
+model pointsetting {
+  id    String @id @default(cuid())
+  key   String @unique(map: "PointSetting_key_key")
+  value String
+}
+
+model redemption {
+  id                String                @id @default(cuid())
+  targetType        redemption_targetType
+  targetId          String
+  catalogItemId     String
+  status            redemption_status     @default(PENDING)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  pointledger       pointledger[]
+  redemptioncatalog redemptioncatalog     @relation(fields: [catalogItemId], references: [id], map: "Redemption_catalogItemId_fkey")
+
+  @@index([catalogItemId], map: "Redemption_catalogItemId_fkey")
+}
+
+model redemptioncatalog {
+  id         String       @id @default(cuid())
+  nama       String
+  deskripsi  String
+  hargaPoin  Int
+  aktif      Boolean      @default(true)
+  redemption redemption[]
+}
+
+model sponsorshipapplication {
+  id                String                                  @id @default(cuid())
+  nomorPengajuan    String                                  @unique
+  clubId            String
+  namaAcara         String
+  tanggalAcara      DateTime
+  danaDiajukan      Decimal
+  benefitDitawarkan String?                                 @db.Text
+  proposalUrl       String?
+  kontakPic         String?
+  tierRekomendasi   sponsorshipapplication_tierRekomendasi?
+  tierFinal         sponsorshipapplication_tierFinal?
+  catatanAdmin      String?                                 @db.Text
+  status            sponsorshipapplication_status           @default(PENDING)
+  createdAt         DateTime                                @default(now())
+  updatedAt         DateTime
+  event             event?
+  club              club                                    @relation(fields: [clubId], references: [id], map: "SponsorshipApplication_clubId_fkey")
+
+  @@index([clubId], map: "SponsorshipApplication_clubId_fkey")
+}
+
+model transaction {
+  id               String             @id
+  memberId         String
+  dealerId         String
+  produk           String
+  nominal          Decimal
+  diskon           Decimal
+  status           transaction_status @default(DRAFT)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  catatanAdmin     String?            @db.Text
+  pointledger      pointledger[]
+  dealer           dealer             @relation(fields: [dealerId], references: [id], map: "Transaction_dealerId_fkey")
+  member           member             @relation(fields: [memberId], references: [id], map: "Transaction_memberId_fkey")
+
+  @@index([dealerId], map: "Transaction_dealerId_fkey")
+  @@index([memberId], map: "Transaction_memberId_fkey")
+}
+
+model user {
+  id           String       @id @default(cuid())
+  email        String?      @unique(map: "User_email_key")
+  phone        String?      @unique(map: "User_phone_key")
+  passwordHash String
+  role         user_role
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  club         club?
+  dealerstaff  dealerstaff?
+  member       member?
+}
+
+enum redemption_targetType {
+  MEMBER
+  CLUB
+}
+
+enum pointledger_targetType {
+  MEMBER
+  CLUB
+}
+
+enum redemption_status {
+  PENDING
+  APPROVED
+  REJECTED
+  FULFILLED
+}
+
+enum user_role {
+  ADMIN
+  CLUB
+  DEALER
+  MEMBER
+}
+
+enum pointledger_tipe {
+  CREDIT
+  HOLD
+  DEBIT
+  REVERSAL
+}
+
+enum sponsorshipapplication_tierRekomendasi {
+  MICRO
+  SMALL
+  MEDIUM
+  BIG
+}
+
+enum transaction_status {
+  DRAFT
+  CONFIRMED
+  VOIDED
+}
+
+enum sponsorshipapplication_tierFinal {
+  MICRO
+  SMALL
+  MEDIUM
+  BIG
+}
+
+enum club_status {
+  unverified
+  active
+  inactive
+}
+
+enum member_gender {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum sponsorshipapplication_status {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
