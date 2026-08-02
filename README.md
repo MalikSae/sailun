@@ -98,11 +98,11 @@ npm install
    ```env
    DATABASE_URL="mysql://DB_USER:DB_PASSWORD@localhost:3306/sailun_community"
    NEXTAUTH_SECRET="<generate acak: openssl rand -base64 32>"
-   NEXTAUTH_URL="https://demo.sailuncommunity.id"
-   AUTH_URL="https://demo.sailuncommunity.id"
+   NEXTAUTH_URL="https://sailun.nalaros.my.id"
+   AUTH_URL="https://sailun.nalaros.my.id"
    UPLOAD_DIR="/public/uploads"
    ```
-   Ganti `demo.sailuncommunity.id` dengan domain Anda, dan buat `NEXTAUTH_SECRET` via `openssl rand -base64 32`.
+   Ganti `sailun.nalaros.my.id` bila memakai domain lain, dan buat `NEXTAUTH_SECRET` via `openssl rand -base64 32`.
 
 ### 5. Jalankan migrasi & seed
 
