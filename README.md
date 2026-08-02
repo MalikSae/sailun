@@ -144,7 +144,30 @@ npm run build
 ```bash
 cp -r public .next/standalone/public
 cp -r .next/static .next/standalone/.next/static
-pm2 start .next/standalone/server.js --name sailun --cwd /www/wwwroot/sailun
+```
+
+Repo sudah menyertakan `ecosystem.config.js` yang menjalankan server standalone dengan flag `--env-file=.env` — ini memastikan `.env` di project root **selalu terbaca** (mode standalone tidak memuat `.env` sendiri secara andal), sehingga semua pengaturan (database, auth, port) dikendalikan dari satu file `.env`:
+
+```js
+// ecosystem.config.js
+module.exports = {
+  apps: [
+    {
+      name: "sailun",
+      cwd: __dirname,
+      script: ".next/standalone/server.js",
+      interpreter: "node",
+      interpreter_args: "--env-file=.env",
+      instances: 1,
+      exec_mode: "fork",
+      env: { NODE_ENV: "production", HOSTNAME: "0.0.0.0" },
+    },
+  ],
+};
+```
+
+```bash
+pm2 start ecosystem.config.js
 pm2 save
 pm2 startup   # jalankan perintah setup systemd yang ditampilkan
 ```
@@ -156,7 +179,13 @@ pm2 status          # harus "online"
 pm2 logs sailun     # lihat log/error kalau ada
 ```
 
-Aplikasi berjalan di port **3000** (ubah via env `PORT` bila perlu).
+**Port bebas diganti** — default 3000, cukup tambahkan di `.env`:
+
+```env
+PORT=3001
+```
+
+lalu `pm2 restart sailun` (jangan lupa sesuaikan `proxy_pass` di Nginx langkah 9). Syarat: Node.js ≥ 20.6 (dibutuhkan flag `--env-file`).
 
 > **Alternatif lewat UI aaPanel:** Node.js Manager → PM2 Manager → **Add Project** → Project path `/www/wwwroot/sailun` → Run command `./node_modules/.bin/next start` (bukan mode standalone), atau tetap pakai CLI di atas agar dapat mode `standalone` yang lebih ringan.
 
