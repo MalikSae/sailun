@@ -8,7 +8,7 @@ async function main() {
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@sailun.id' },
-    update: {},
+    update: { passwordHash, updatedAt: new Date() },
     create: {
       id: crypto.randomUUID(),
       email: 'admin@sailun.id',
@@ -57,7 +57,7 @@ async function main() {
   // 3. Dealer Staff
   const dealerUser = await prisma.user.upsert({
     where: { email: "dealer@sailun.id" },
-    update: {},
+    update: { passwordHash, updatedAt: new Date() },
     create: {
       id: crypto.randomUUID(),
       email: "dealer@sailun.id",
