@@ -15,7 +15,7 @@ export async function loginAction(prevState: string | undefined, formData: FormD
   try {
     await signIn("credentials", {
       ...Object.fromEntries(formData),
-      redirectTo: callbackUrl ?? "/login",
+      redirectTo: callbackUrl ?? "/redirect",
     });
   } catch (error) {
     if (error instanceof AuthError) {
