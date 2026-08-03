@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = "force-dynamic"
+
 import { FormCard } from "@/components/ui/form-card"
 import { TextInput } from "@/components/ui/text-input"
 import { ButtonPrimary } from "@/components/ui/button-primary"
