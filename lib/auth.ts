@@ -4,6 +4,7 @@ import { db } from "./db"
 import bcrypt from "bcrypt"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   // Fallback supaya placeholder NEXTAUTH_SECRET tidak mematahkan login saat deploy.
   // GANTI dengan openssl rand -base64 32 di .env sebelum go-live publik.
   secret: process.env.NEXTAUTH_SECRET || "sailun-dev-secret-GANTI-SEBELUM-PRODUCTION",
