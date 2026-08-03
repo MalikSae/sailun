@@ -3,6 +3,39 @@ import path from "path";
 import crypto from "crypto";
 import sharp from "sharp";
 
+const UPLOAD_PUBLIC_PATH = "/uploads";
+
+function getProjectRoot() {
+  const cwd = process.cwd();
+  if (cwd.endsWith(path.join(".next", "standalone"))) {
+    return path.resolve(cwd, "..", "..");
+  }
+  return cwd;
+}
+
+function getUploadsDir() {
+  const configuredDir = process.env.UPLOAD_DIR?.trim();
+
+  if (configuredDir) {
+    return path.isAbsolute(configuredDir)
+      ? configuredDir
+      : path.resolve(getProjectRoot(), configuredDir);
+  }
+
+  return path.join(getProjectRoot(), "public", "uploads");
+}
+
+function extensionFromFileName(fileName: string, fallback: string) {
+  const ext = path.extname(fileName).replace(".", "").toLowerCase();
+  return ext || fallback;
+}
+
+async function ensureUploadsDir() {
+  const uploadsDir = getUploadsDir();
+  await fs.mkdir(uploadsDir, { recursive: true });
+  return uploadsDir;
+}
+
 export async function uploadLogo(file: File): Promise<string> {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
   if (!allowedTypes.includes(file.type)) {
@@ -11,13 +44,8 @@ export async function uploadLogo(file: File): Promise<string> {
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-
-  // Generate hash for filename
   const hash = crypto.createHash("sha256").update(buffer).digest("hex").slice(0, 16);
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-
-  // Ensure uploads directory exists
-  await fs.mkdir(uploadsDir, { recursive: true });
+  const uploadsDir = await ensureUploadsDir();
 
   let finalBuffer = buffer;
   let ext = "webp";
@@ -25,7 +53,6 @@ export async function uploadLogo(file: File): Promise<string> {
   if (file.type === "image/svg+xml") {
     ext = "svg";
   } else {
-    // Process raster image with sharp
     finalBuffer = await sharp(buffer)
       .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
       .webp({ quality: 80 })
@@ -37,7 +64,7 @@ export async function uploadLogo(file: File): Promise<string> {
 
   await fs.writeFile(filePath, finalBuffer);
 
-  return `/uploads/${filename}`;
+  return `${UPLOAD_PUBLIC_PATH}/${filename}`;
 }
 
 export async function uploadProposal(file: File): Promise<string> {
@@ -50,7 +77,6 @@ export async function uploadProposal(file: File): Promise<string> {
     throw new Error("Format file tidak valid. Hanya PDF, DOC, dan DOCX yang diperbolehkan.");
   }
 
-  // Batas 10MB
   const MAX_SIZE = 10 * 1024 * 1024;
   if (file.size > MAX_SIZE) {
     throw new Error("Ukuran file terlalu besar. Maksimal 10MB.");
@@ -58,21 +84,18 @@ export async function uploadProposal(file: File): Promise<string> {
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-
-  // Generate hash for filename
   const hash = crypto.createHash("sha256").update(buffer).digest("hex").slice(0, 16);
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+  const uploadsDir = await ensureUploadsDir();
+  const ext = extensionFromFileName(file.name, "pdf");
 
-  await fs.mkdir(uploadsDir, { recursive: true });
-
-  let ext = "pdf";
-  if (file.name.endsWith(".doc")) ext = "doc";
-  else if (file.name.endsWith(".docx")) ext = "docx";
+  if (!["pdf", "doc", "docx"].includes(ext)) {
+    throw new Error("Format file tidak valid. Hanya PDF, DOC, dan DOCX yang diperbolehkan.");
+  }
 
   const filename = `proposal_${hash}.${ext}`;
   const filePath = path.join(uploadsDir, filename);
 
   await fs.writeFile(filePath, buffer);
 
-  return `/uploads/${filename}`;
+  return `${UPLOAD_PUBLIC_PATH}/${filename}`;
 }

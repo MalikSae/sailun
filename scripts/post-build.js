@@ -8,31 +8,28 @@ const rootNextStatic = path.join(__dirname, '..', '.next', 'static');
 const standalonePublic = path.join(standaloneDir, 'public');
 const standaloneNextStatic = path.join(standaloneDir, '.next', 'static');
 
-// Helper to safely create a symlink (or copy on Windows if symlink fails)
 function linkOrCopy(src, dest) {
   if (!fs.existsSync(src)) return;
-  
+
   if (fs.existsSync(dest)) {
     fs.rmSync(dest, { recursive: true, force: true });
   }
 
   try {
     fs.symlinkSync(src, dest, 'junction');
-    console.log(`✅ Symlinked ${src} -> ${dest}`);
+    console.log(`[post-build] Linked ${src} -> ${dest}`);
   } catch (error) {
-    console.log(`⚠️ Symlink failed for ${dest}, falling back to copy...`);
+    console.log(`[post-build] Symlink failed for ${dest}, falling back to copy.`);
     fs.cpSync(src, dest, { recursive: true });
-    console.log(`✅ Copied ${src} -> ${dest}`);
+    console.log(`[post-build] Copied ${src} -> ${dest}`);
   }
 }
 
-// Ensure .next directory exists inside standalone
 const standaloneNextDir = path.join(standaloneDir, '.next');
 if (!fs.existsSync(standaloneNextDir)) {
   fs.mkdirSync(standaloneNextDir, { recursive: true });
 }
 
-// Ensure uploads dir exists in root public
 const rootUploads = path.join(rootPublic, 'uploads');
 if (!fs.existsSync(rootUploads)) {
   fs.mkdirSync(rootUploads, { recursive: true });
@@ -41,4 +38,4 @@ if (!fs.existsSync(rootUploads)) {
 linkOrCopy(rootPublic, standalonePublic);
 linkOrCopy(rootNextStatic, standaloneNextStatic);
 
-console.log('✅ Post-build setup for standalone mode complete!');
+console.log('[post-build] Standalone public and static setup complete.');
