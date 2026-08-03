@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
 
       // Izinkan Server Action request dari sailun.test melewati CSRF check
       // karena ada Apache reverse proxy di depan (sailun.test → localhost:3000)
-      allowedOrigins: ["sailun.test", "*.sailun.test"],
+      allowedOrigins: ["sailun.test", "*.sailun.test", "sailun.nalaros.my.id", "*.sailun.nalaros.my.id"],
     },
   },
 
