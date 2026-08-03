@@ -10,6 +10,7 @@ interface FileUploadDropzoneProps {
   description?: string;
   isImage?: boolean;
   maxSizeMb?: number;
+  name?: string;
 }
 
 export function FileUploadDropzone({
@@ -18,7 +19,8 @@ export function FileUploadDropzone({
   label = "Logo Klub",
   description = "JPG, PNG, atau WEBP — ukuran besar otomatis dikompres",
   isImage = true,
-  maxSizeMb = 10
+  maxSizeMb = 10,
+  name
 }: FileUploadDropzoneProps) {
   const [dragActive, setDragActive] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -113,6 +115,7 @@ export function FileUploadDropzone({
       >
         <input
           id={inputId}
+          name={name}
           type="file"
           className="sr-only"
           accept={accept}

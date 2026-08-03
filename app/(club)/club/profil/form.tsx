@@ -23,15 +23,8 @@ export function ProfilForm({ club }: { club: any }) {
     return () => URL.revokeObjectURL(url);
   }, [logoFile]);
 
-  const handleSubmit = (formData: FormData) => {
-    if (logoFile) {
-      formData.set("logo", logoFile);
-    }
-    formAction(formData);
-  };
-
   return (
-    <form action={handleSubmit} className="space-y-6 max-w-2xl">
+    <form action={formAction} className="space-y-6 max-w-2xl">
       <FormCard title="Logo Klub">
         <div className="flex flex-col gap-4">
           {logoPreviewUrl && (
@@ -40,6 +33,7 @@ export function ProfilForm({ club }: { club: any }) {
             </div>
           )}
           <FileUploadDropzone 
+            name="logo"
             onFileSelect={(file) => setLogoFile(file)} 
           />
         </div>
