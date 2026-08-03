@@ -20,6 +20,15 @@ const nextConfig: NextConfig = {
 
   // Diperlukan untuk deployment standalone di VPS + PM2 (AGENTS.md §11)
   output: "standalone",
+
+  async rewrites() {
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: '/api/file/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
