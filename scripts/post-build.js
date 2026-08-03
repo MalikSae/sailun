@@ -16,10 +16,11 @@ function linkOrCopy(src, dest) {
   }
 
   try {
-    fs.symlinkSync(src, dest, 'junction');
+    const type = process.platform === 'win32' ? 'junction' : 'dir';
+    fs.symlinkSync(src, dest, type);
     console.log(`[post-build] Linked ${src} -> ${dest}`);
   } catch (error) {
-    console.log(`[post-build] Symlink failed for ${dest}, falling back to copy.`);
+    console.log(`[post-build] Symlink failed for ${dest}, falling back to copy. Error: ${error.message}`);
     fs.cpSync(src, dest, { recursive: true });
     console.log(`[post-build] Copied ${src} -> ${dest}`);
   }
