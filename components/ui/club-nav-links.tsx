@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, Gift, Users } from "lucide-react";
+import { Home, ClipboardList, Gift, Users, UserCircle } from "lucide-react";
 
 export const clubNavItems = [
   { href: "/club/dashboard", label: "Dashboard", icon: Home },
+  { href: "/club/profil", label: "Profil", icon: UserCircle },
   { href: "/club/anggota", label: "Anggota", icon: Users },
   { href: "/ajukan-sponsorship", label: "Ajukan Sponsorship", icon: ClipboardList },
   { href: "/club/redeem", label: "Tukar Poin", icon: Gift },
